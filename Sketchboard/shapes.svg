@@ -1,0 +1,24 @@
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox='0, 0, 100, 100' preserveAspectRatio='none'>
+  <script type='application/ecmascript'>
+    const params = new URL(location.href).searchParams;
+    const shape = params.get('shape');
+    debugger;
+    // document.documentElement.setAttribute('width', `${((params.get('strokeWidth') ? Number(params.get('strokeWidth'))/2 : 2.5)+100)}px`);
+    // document.documentElement.setAttribute('height', `${((params.get('strokeWidth') ? Number(params.get('strokeWidth'))/2 : 2.5)+100)}px`);
+    document.documentElement.setAttribute('width', `100%`);
+    document.documentElement.setAttribute('height', `100%`);
+    document.documentElement.setAttribute('viewBox', `0, 0, ${window.innerHeight}, ${window.innerWidth}`);
+    if(shape === 'rect'){
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+      rect.x = rect.y = params.get('strokeWidth')+'px' || '5px';
+      rect.setAttribute('style', `
+        height: 100px;
+        width: 100px;
+        fill: ${params.get('fill') || 'transparent'};
+        stroke: ${params.get('stroke') || 'black'};
+        stroke-width: ${params.get('strokeWidth') || '5'}px;
+      `)
+      document.documentElement.prepend(rect);
+    }
+  </script>
+</svg>
