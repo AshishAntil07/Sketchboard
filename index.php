@@ -7,8 +7,7 @@
     <title>Sketch Board</title>
     <meta name="description" content="An offline virtual Sketch Board to make your work easy.">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="./board.css">
-    <link rel="shortcut icon" href="Pictures/Logo-dark.png" type="image/x-icon">
+    <link rel="shortcut icon" href="Sketchboard/Pictures/Logo-dark.png" type="image/x-icon">
     
 <style>
 *{
