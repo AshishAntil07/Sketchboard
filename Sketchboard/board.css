@@ -10,25 +10,6 @@ html{
 
 /* Main */
 
-.menuBtn{
-  box-sizing: border-box;
-  transform: rotateZ(90deg);
-  padding: 5px;
-  background: gray;
-  height: 35px;
-  width: 35px;
-  border-radius: 5px;
-  padding-top: 3px;
-  cursor: pointer;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 20px;
-  font-weight: bolder;
-}
-.menuBtn:hover{
-  background: #909090;
-}
 .topBar button{
   height: 30px;
   width: 100px;
