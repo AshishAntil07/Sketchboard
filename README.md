@@ -4,5 +4,7 @@ A sketchboard that can be used to make wonders. It's basically a clone of google
 
 You can see it [HERE](https://boardsketch.herokuapp.com/).
 
+*Recommended: Set your browser zoom to 90% and reload the sketchboard, for better experience.*
+
 ## 📰 License :
 This repository is licensed under [MIT License](https://github.com/AshishAntil07/Sketchboard/blob/main/LICENSE)
