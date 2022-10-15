@@ -273,11 +273,6 @@ topBar.setAttribute('style', `
   box-sizing: border-box;
 `)
 
-const menuBtn = document.createElement('div');
-menuBtn.innerHTML = '|||';
-menuBtn.classList.add('menuBtn');
-
-
 const wrapper = document.createElement('div');
 wrapper.setAttribute('style', `
   display: flex;
@@ -358,7 +353,7 @@ colorMain.addEventListener('click', e => !colorCont.contains(e.target)?colorCont
 colorMain.append(colorCont)
 wrapper.append(colorMain, penWidth, clearBtn, importBtn, exportBtn);
 
-topBar.append(menuBtn, wrapper);
+topBar.append(wrapper);
 document.body.append(topBar);
 
 
