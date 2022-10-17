@@ -1,3 +1,4 @@
+console.time();
 // functions
 const getStyle = (elem, prop) => Number(getComputedStyle(elem)[prop].replace('px', ''));
 const twist = (iter, index) => {
@@ -204,49 +205,60 @@ const resizeFunctions = {
   }
 }
 
-const childAdded = lastElem => {
-  const child = lastElem.cloneNode(true);
-
-  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-  svg.append(child);
-  svg.style.height = svg.style.width = '100%';
-  svg.style.backgroundColor = getComputedStyle(board).backgroundColor=='rgba(0, 0, 0, 0)'?'white':getComputedStyle(board).backgroundColor;
-  svg.setAttribute('viewBox', `0 0 ${getStyle(board, 'width')} ${getStyle(board, 'height')}`);
-
-  const container = document.createElement('div');
-  container.classList.add('element');
-  container.addEventListener('mouseover', e=>{
-    lastElem.style.outline = '1px solid blue'
-    lastElem.style.strokeWidth = getStyle(lastElem, 'stroke-width')+2+'px';
-    lastElem.firstChild?lastElem.firstChild.style.fontWeight = getStyle(lastElem, 'font-weight')+200:0;
-  });
-  container.addEventListener('mouseout', e=>{
-    lastElem.style.outline = 'none';
-    lastElem.style.strokeWidth = getStyle(lastElem, 'stroke-width')-2+'px';
-    lastElem.firstChild?lastElem.firstChild.style.fontWeight = getStyle(lastElem, 'font-weight')-200:0;
-  });
-  elements.append(container);
-
-  const deleteBtn = document.createElement('div');
-  deleteBtn.innerHTML = '&Cross;';
-  deleteBtn.setAttribute('style', `
-    height: 15px;
-    width: 15px;
-    font-size: 20px;
-    position: relative;
-    top: 10px;
-    cursor: pointer;
-  `)
-  deleteBtn.title = 'Delete';
-  deleteBtn.addEventListener('click', e => {
-    lastElem.remove();
-    container.remove();
-  });
-
-  container.append(deleteBtn, svg);
-  elements.style.height = `${elements.scrollHeight + 10}px`;
-  elements.scrollTop = elements.scrollHeight;
+function updateStorage(){
+  const fullSize = String((new Blob([boardParent.innerHTML]).size)/1024);
+  boardObject.files[currentFile] = {svg: boardParent.innerHTML, size: fullSize.slice(0, fullSize.indexOf('.')+3)+'kb'};
+  boardObject.currentFile = currentFile;
+  localStorage.setItem('Sketch Board', JSON.stringify(boardObject));
 }
+const childAdded = lastElem => {
+  if(!lastElem.getAttribute('eraser')){
+    const child = lastElem.cloneNode(true);
+
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    svg.append(child);
+    svg.style.height = svg.style.width = '100%';
+    svg.style.backgroundColor = getComputedStyle(board).backgroundColor=='rgba(0, 0, 0, 0)'?'white':getComputedStyle(board).backgroundColor;
+    svg.setAttribute('viewBox', `0 0 ${getStyle(board, 'width')} ${getStyle(board, 'height')}`);
+
+    const container = document.createElement('div');
+    container.classList.add('element');
+    container.addEventListener('mouseover', e=>{
+      lastElem.style.outline = '1px solid blue'
+      lastElem.style.strokeWidth = getStyle(lastElem, 'stroke-width')+2+'px';
+      lastElem.firstChild?lastElem.firstChild.style.fontWeight = getStyle(lastElem, 'font-weight')+200:0;
+    });
+    container.addEventListener('mouseout', e=>{
+      lastElem.style.outline = 'none';
+      lastElem.style.strokeWidth = getStyle(lastElem, 'stroke-width')-2+'px';
+      lastElem.firstChild?lastElem.firstChild.style.fontWeight = getStyle(lastElem, 'font-weight')-200:0;
+    });
+    elements.append(container);
+
+    const deleteBtn = document.createElement('div');
+    deleteBtn.innerHTML = '&Cross;';
+    deleteBtn.setAttribute('style', `
+      height: 15px;
+      width: 15px;
+      font-size: 20px;
+      position: relative;
+      top: 10px;
+      cursor: pointer;
+    `)
+    deleteBtn.title = 'Delete';
+    deleteBtn.addEventListener('click', e => {
+      lastElem.remove();
+      container.remove();
+      updateStorage();
+    });
+
+    container.append(deleteBtn, svg);
+    elements.style.height = `${elements.scrollHeight + 10}px`;
+    elements.scrollTop = elements.scrollHeight;
+  }
+  updateStorage();
+}
+
 const select = elem => {
   for(let i=0; i<sideBar.children.length; i++){
     sideBar.children[i].style.backgroundColor='lightgray';
@@ -266,12 +278,209 @@ topBar.setAttribute('style', `
   background: darkgray;
   border-bottom: 3px solid lightgray;
   display: flex;
+  user-select: none;
   justify-content: space-between;
   align-items: center;
   padding-right: 10%;
   padding-left: 7.5px;
   box-sizing: border-box;
 `)
+
+const menuBtn = document.createElement('div');
+menuBtn.innerHTML = '|||';
+menuBtn.classList.add('menuBtn');
+menuBtn.addEventListener('click', e => {
+  bigContainer.style.left = 0;
+  loadFiles();
+});
+
+const bigContainer = document.createElement('div');
+bigContainer.setAttribute('style', `
+  height: ${window.innerHeight}px;
+  width: 100%;
+  position: absolute;
+  background: lightgray;
+  box-shadow: 0px 0px 10px darkgray;
+  z-index: 1;
+  left: -100%;
+  transition: left 1s;
+`)
+
+const back = document.createElement('div');
+const backBtn = document.createElement('div');
+backBtn.setAttribute('style', `
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  margin-top: 10px;
+  font-size: 20px;
+  margin-left: 25px;
+  cursor: pointer;
+`)
+backBtn.innerHTML = 'Back';
+backBtn.addEventListener('mouseover', e => {
+  arrow.style.left = '-5px';
+  backBtn.addEventListener('mouseout', e => arrow.style.left = 0, {once:true});
+})
+backBtn.addEventListener('click', e => bigContainer.style.left = '-100%');
+
+const arrow = document.createElement('div');
+arrow.innerHTML = '<';
+arrow.style.fontFamily = 'consolas';
+arrow.setAttribute('style', `
+  font-family: consolas;
+  margin-right: 10px;
+  position: relative;
+  transition: left .4s;
+`)
+backBtn.prepend(arrow);
+back.append(backBtn);
+
+const fileContainer = document.createElement('div');
+fileContainer.setAttribute('style', `
+  padding: 25px;padding-right: 0;
+  display: flex;
+  flex-flow: row wrap;
+`)
+
+function addFile(svg, name, size){
+  const file = document.createElement('div');
+  file.setAttribute('style', `
+    height: 200px;
+    width: 300px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 5px darkgray;
+    overflow: hidden;
+    margin-right: 25px;
+    margin-bottom: 25px;
+    display: flex;
+    flex-flow: column nowrap;
+    transition: transform .4s;
+  `)
+  file.addEventListener('mouseover', e => {
+    filePreview.firstChild.style.transform = 'scale(1.1, 1.1)';
+    fileDeleteBtn.style.display = 'flex';
+    file.addEventListener('mouseout', e => {
+      filePreview.firstChild.style.transform = 'none';
+      fileDeleteBtn.style.display = 'none';
+    }, {once:true});
+  })
+  file.addEventListener('click', e => {
+    if(e.target !== fileName || e.target !== fileDeleteBtn){
+      currentFile = name;
+      boardParent.innerHTML = svg;
+      board = boardParent.firstChild;
+      board.classList.add('board');
+      select(penBtn);
+      addListener(board);
+      elements.innerHTML = '';
+      for(let p = 0; p<board.children.length; p++){
+        childAdded(board.children[p]);
+      }
+      bigContainer.style.left = '-100%';
+    }
+  })
+
+  const fileDeleteBtn = document.createElement('div');
+  fileDeleteBtn.setAttribute('style', `
+    position: absolute;
+    font-size: 20px;
+    display: none;
+    margin-left: 275px;
+    cursor: pointer;
+  `)
+  fileDeleteBtn.innerHTML = '&Cross;';
+  fileDeleteBtn.addEventListener('click', e => {
+    delete boardObject.files[name];
+    if(currentFile === name) if(Object.keys(boardObject.files).length === 0){
+      currentFile = 'Untitled';
+      select(penBtn);
+      addListener(board);
+      elements.innerHTML = board.innerHTML = '';
+    }else file.nextElementSibling.click();
+    file.remove();
+    updateStorage();
+  })
+
+  const filePreview = document.createElement('div');
+  filePreview.setAttribute('style', `
+    height: 150px;
+    background: white;
+    overflow: hidden;
+  `)
+  filePreview.innerHTML = svg;
+  filePreview.firstChild.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+  filePreview.firstChild.setAttribute('version', '1.1');
+  filePreview.firstChild.style.transition = 'transform .4s';
+
+  const fileAbout = document.createElement('div');
+  fileAbout.setAttribute('style', `
+    display: flex;
+    height: 50px;
+    flex-flow: column nowrap;
+    padding: 5px;
+    padding-right: 10px;padding-left: 10px;
+    background: rgb(181, 181, 181);
+  `)
+
+  const fileName = document.createElement('input');
+  fileName.value = name;
+  fileName.setAttribute('style', `
+    width: 100%;
+    font-size: 20px;
+    outline: none;
+    border: none;
+    color: black;
+    cursor: text;
+    padding: 0;
+    background: transparent;
+  `)
+
+  const saveName = e => {
+    boardObject.files[fileName.value] = boardObject.files[name];
+    delete boardObject.files[name];
+    if(currentFile === name) currentFile = fileName.value.trim();
+    fileName.value = fileName.value.trim();
+    updateStorage();
+  }
+
+  fileName.addEventListener('focus', e => {
+    fileName.addEventListener('focusout', e => {
+      if(boardObject.files[fileName.value.trim()] && fileName.value.trim() !== name){
+        alert('A file with the name already exists. Please change the name.');
+      }else{
+        saveName();
+      }
+    }, {once:true})
+  })
+
+  const fileDetails = document.createElement('div');
+  fileDetails.setAttribute('style', `
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: dimgray;
+  `)
+  fileDetails.innerHTML = `Size: ${size}`;
+
+  fileAbout.append(fileName, fileDetails);
+  file.append(fileDeleteBtn, filePreview, fileAbout);
+
+  fileContainer.append(file);
+}
+
+function loadFiles() {
+  const files = boardObject.files;
+  fileContainer.innerHTML = '';
+  Object.keys(files).forEach(name => {
+    if(files[name]!==undefined){
+      addFile(files[name].svg, name, files[name].size);
+    }
+  })
+}
+
+bigContainer.append(back, fileContainer);
+
 
 const wrapper = document.createElement('div');
 wrapper.setAttribute('style', `
@@ -281,7 +490,7 @@ wrapper.setAttribute('style', `
 
 const clearBtn = document.createElement('button');
 clearBtn.innerHTML = 'Clear';
-clearBtn.addEventListener('click', e => board.innerHTML = elements.innerHTML='');
+clearBtn.addEventListener('click', e => {board.innerHTML = elements.innerHTML=''; updateStorage()});
 
 const importBtn = document.createElement('button');
 importBtn.innerHTML = 'Import';
@@ -296,6 +505,8 @@ fileBtn.addEventListener('input', e => {
       board = boardParent.children[0]
       board.style.width = board.style.height = '100%';
       addListener(board)
+      board.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+      board.setAttribute('version', '1.1');
       elements.innerHTML = '';
       for(let k=0; k<board.children.length; k++) childAdded(board.children[k]);
     }
@@ -353,8 +564,8 @@ colorMain.addEventListener('click', e => !colorCont.contains(e.target)?colorCont
 colorMain.append(colorCont)
 wrapper.append(colorMain, penWidth, clearBtn, importBtn, exportBtn);
 
-topBar.append(wrapper);
-document.body.append(topBar);
+topBar.append(menuBtn, wrapper);
+document.body.append(bigContainer, topBar);
 
 
 // Side Bar
@@ -648,6 +859,7 @@ rightSideBar.setAttribute('style', `
   padding-left: 10px;
   background: lightgray;
   display: flex;
+  user-select: none;
   flex-flow: column nowrap;
   box-sizing: border-box;
 `)
@@ -681,13 +893,14 @@ boardParent.style.width = `${window.innerWidth - getStyle(sideBar, 'width')-getS
 
 let board = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
 board.classList.add('board');
+board.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+board.setAttribute('version', '1.1');
 
 const drawFunc = e => {
-  if(board.lastChild.tagName == 'polyline'){
-    const currPoint = `${e.clientX-getStyle(sideBar, 'width')},${e.clientY - getStyle(topBar, 'height')} `;
-    const prevPoints = board.lastChild.getAttribute('points');
-    board.lastChild.setAttribute('points', prevPoints+currPoint);
-  }
+  e.preventDefault();
+  const currPoint = `${e.clientX-getStyle(sideBar, 'width')},${e.clientY - getStyle(topBar, 'height')} `;
+  const prevPoints = board.lastChild.getAttribute('points');
+  board.lastChild.setAttribute('points', prevPoints+currPoint);
 }
 
 const downFunc = e => {
@@ -699,6 +912,7 @@ const downFunc = e => {
     stroke: ${isLaser ?? isEraser ?? getComputedStyle(colorMain).backgroundColor};
     stroke-width: ${penWidth.value+'px'};
   `)
+  isEraser?line.setAttribute('eraser', true):0;
   line.setAttribute('points', '');
   board.addEventListener('mousemove', drawFunc)
   !isLaser?document.addEventListener('mouseup', upFunc, {once:true}):document.addEventListener('mouseup', laserUp, {once:true});
@@ -709,7 +923,7 @@ const upFunc = e => {
   board.removeEventListener('mousemove', drawFunc);
   if(board.lastChild.tagName == 'polyline'){
     const points = board.lastChild?.getAttribute('points')?.trim();
-    if(points && points.split(' ').length>1) isEraser ?? childAdded(board.lastChild);
+    if(points && points.split(' ').length>1) childAdded(board.lastChild);
     else board.lastChild.remove();
   }
 }
@@ -761,5 +975,20 @@ popUp.save = func => {
 popUp.append(discard, save);
 penBtn.click();
 
-
 document.body.append(paarent, popUp);
+
+
+let boardObject = JSON.parse(localStorage.getItem('Sketch Board'));
+let currentFile = boardObject.currentFile;
+boardParent.innerHTML = boardObject.files[currentFile].svg;
+board = boardParent.firstChild;
+board.classList.add('board');
+select(penBtn);
+addListener(board);
+elements.innerHTML = '';
+for(let p = 0; p<board.children.length; p++){
+  childAdded(board.children[p]);
+}
+bigContainer.style.left = '-100%';
+
+console.timeEnd();
