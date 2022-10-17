@@ -221,7 +221,11 @@ html{
     
     <script>
    console.time();
-// functions
+
+      if(!localStorage.getItem('Sketch Board')){
+  localStorage.setItem('Sketch Board', JSON.stringify({files:{},currentFile:'Untitled'}));
+}
+      // functions
 const getStyle = (elem, prop) => Number(getComputedStyle(elem)[prop].replace('px', ''));
 const twist = (iter, index) => {
   let newIter=[];
