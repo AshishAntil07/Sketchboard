@@ -339,7 +339,7 @@
           cursor.setAttribute('style', `
             height: 20px;
             width: 20px;
-            background-image: url('Pictures/rotateCursor.png');
+            background-image: url('Sketchboard/Pictures/rotateCursor.png');
             background-repeat: no-repeat;
             background-size: contain;
             background-position: center;
@@ -908,7 +908,7 @@
 
       const penBtn = document.createElement('div');
       penBtn.title = 'Pen';
-      penBtn.style.backgroundImage = 'url("Pictures/Pen.png")';
+      penBtn.style.backgroundImage = 'url("Sketchboard/Pictures/Pen.png")';
       penBtn.unselect = e => removeListener(board);
       penBtn.addEventListener('click', e => {
         select(penBtn);
@@ -917,7 +917,7 @@
 
       const textBtn = document.createElement('div');
       textBtn.title = 'Add textbox.';
-      textBtn.style.backgroundImage = 'url("Pictures/Text-cursor.png")';
+      textBtn.style.backgroundImage = 'url("Sketchboard/Pictures/Text-cursor.png")';
       textBtn.unselect = () => {
         textBtn.addEventListener('click', e => {
           select(textBtn);
@@ -984,7 +984,7 @@
 
       const lineBtn = document.createElement('div');
       lineBtn.title = 'Line';
-      lineBtn.style.backgroundImage = 'url("Pictures/zigZag.png")';
+      lineBtn.style.backgroundImage = 'url("Sketchboard/Pictures/zigZag.png")';
       lineBtn.unselect = e => {
         discard.click();
         lineBtn.addEventListener('click', e => {
@@ -1087,7 +1087,7 @@
 
       const eraser = document.createElement('div');
       eraser.title = 'Eraser';
-      eraser.style.backgroundImage = 'url("Pictures/eraser.png")';
+      eraser.style.backgroundImage = 'url("Sketchboard/Pictures/eraser.png")';
       let isEraser;
       eraser.unselect = e => {
         isEraser = null;
@@ -1101,7 +1101,7 @@
 
       const imageBtn = document.createElement('div');
       imageBtn.title = 'Insert an Image.';
-      imageBtn.style.backgroundImage = 'url("Pictures/Image-icon.webp")';
+      imageBtn.style.backgroundImage = 'url("Sketchboard/Pictures/Image-icon.webp")';
       imageBtn.addEventListener('click', e => {
         select(imageBtn);
         imageInput.click();
@@ -1149,7 +1149,7 @@
 
       const laserBtn = document.createElement('div');
       laserBtn.title = 'Laser';
-      laserBtn.style.backgroundImage = 'url("Pictures/Laser.png")';
+      laserBtn.style.backgroundImage = 'url("Sketchboard/Pictures/Laser.png")';
       laserBtn.style.backgroundSize = '35px 15px';
       let isLaser;
       laserBtn.unselect = e => {
