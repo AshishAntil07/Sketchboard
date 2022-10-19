@@ -1035,6 +1035,6 @@ if(boardObject.files[currentFile]){
   bigContainer.style.left = '-100%';
 }
 
-document.querySelector('.background').remove();
+window.onload = e => document.querySelector('.background').remove();
 
 console.timeEnd();
