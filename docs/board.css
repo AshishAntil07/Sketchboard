@@ -17,8 +17,9 @@ html{
   position: absolute;
   z-index: 10;
   justify-content: center;
+  backdrop-filter: blur(7px);
   align-items: center;
-  background: rgba(170, 170, 170, 0.7);
+  background: rgba(170, 170, 170, 0.6);
 }
 .animate{
   background: transparent;

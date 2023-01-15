@@ -296,7 +296,8 @@ bigContainer.setAttribute('style', `
   height: ${window.innerHeight}px;
   width: 100%;
   position: absolute;
-  background: lightgray;
+  background: rgba(175,175,175,0.6);
+  backdrop-filter: blur(7px);
   box-shadow: 0px 0px 10px darkgray;
   z-index: 1;
   left: -100%;
