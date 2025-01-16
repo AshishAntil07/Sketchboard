@@ -6,7 +6,6 @@ You can see it [HERE](https://ashishantil07.github.io).
 
 __Note that the deployment on Heroku will not show up, that's why you are requested to visit the deployment on github pages...__
 
-*Recommended: Set your browser zoom to 90% and reload the sketchboard, for better experience.*
 
 ## 📰 License :
 This repository is licensed under [MIT License](https://github.com/AshishAntil07/Sketchboard/blob/main/LICENSE)
